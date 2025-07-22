@@ -1,127 +1,82 @@
-import { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, FlatList, SafeAreaView } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { StyleSheet, TextInput, Pressable, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import QRCode from 'react-native-qrcode-svg';
+import ParallaxScrollView from '@/components/ParallaxScrollView';
 
-
-
-interface WalletCard {
-  id: string;
-  type: 'credit' | 'ticket' | 'student';
-  title: string;
-  subtitle?: string;
-  qrCodeData?: string; // Optional QR code data for student cards
-}
-
-const DUMMY_CARDS: WalletCard[] = [
-  { id: '1', type: 'credit', title: 'Visa •••• 4242', subtitle: 'Expires 04/26' },
-  { id: '2', type: 'ticket', title: 'Concert - Imagine Dragons' },  {
-    id: '3',
-    type: 'student',
-    title: 'USI Student ID',
-    subtitle: 'Alan Copa • 2024–2026',
-    qrCodeData: 'https://www.usi.ch/en/authentication/BWFXH', // or a real QR code string
-  }
-];
-
-export default function WalletScreen() {
-  const [cards, setCards] = useState<WalletCard[]>(DUMMY_CARDS);
-
-  const renderCard = ({ item }: { item: WalletCard }) => (
-    <View style={styles.cardWrapper}>
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>{item.title}</Text>
-        {item.subtitle && <Text style={styles.cardSubtitle}>{item.subtitle}</Text>}
-        <Text style={styles.cardType}>Type: {item.type}</Text>
-        {item.type === 'student' && item.qrCodeData && (
-  <View style={{ marginTop: 12 }}>
-    <QRCode value={item.qrCodeData} size={100} backgroundColor="white" />
-  </View>
-)}
-
-      </View>
-    </View>
-  );
+export default function SendScreen() {
+  const insets = useSafeAreaInsets();
 
   return (
-    <SafeAreaView style={styles.safeContainer}>
-      <View style={styles.header}>
-        <ThemedText type="title">Wallet</ThemedText>
-        <View style={styles.icons}>
-          <TouchableOpacity onPress={() => {}}>
-            <Ionicons name="add-circle-outline" size={28} color="#2563eb" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => {}}>
-            <Ionicons name="ellipsis-vertical" size={24} color="#2563eb" style={{ marginLeft: 12 }} />
-          </TouchableOpacity>
-        </View>
-      </View>
-      <FlatList
-  data={cards}
-  keyExtractor={(item) => item.id}
-  renderItem={renderCard}
-  contentContainerStyle={styles.listContainer}
-  ListHeaderComponent={<View style={{ height: 40 }} />}
-  showsVerticalScrollIndicator={false}
-/>
+    <ParallaxScrollView
+      headerBackgroundColor={{ light: '#c7d2fe', dark: '#312e81' }}
+      headerImage={null}
+    >
+      <ThemedView style={[styles.container, { paddingBottom: insets.bottom }]}>
+        <ThemedText type="title">Send Bitcoin ⚡</ThemedText>
 
-    </SafeAreaView>
+        <TextInput
+          style={styles.input}
+          placeholder="Paste Lightning invoice (BOLT11)"
+          placeholderTextColor="#94a3b8"
+        />
+
+        <View style={styles.row}>
+          <Pressable style={styles.secondaryButton}>
+            <Text style={styles.secondaryButtonText}>Paste</Text>
+          </Pressable>
+          <Pressable style={styles.secondaryButton}>
+            <Text style={styles.secondaryButtonText}>Scan QR 📷</Text>
+          </Pressable>
+        </View>
+
+        <Pressable style={styles.primaryButton}>
+          <Text style={styles.primaryButtonText}>Send</Text>
+        </Pressable>
+      </ThemedView>
+    </ParallaxScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeContainer: {
+  container: {
+    gap: 20,
+    padding: 20,
+  },
+  input: {
+    backgroundColor: '#f1f5f9',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderRadius: 10,
+    fontSize: 16,
+    color: '#0f172a',
+  },
+  row: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  secondaryButton: {
     flex: 1,
-    backgroundColor: '#f8faff',
-    paddingHorizontal: 20,
-    paddingTop: 10,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    backgroundColor: '#e2e8f0',
+    paddingVertical: 14,
     alignItems: 'center',
-    marginBottom: 20,
+    borderRadius: 10,
   },
-  icons: {
-    flexDirection: 'row',
+  secondaryButtonText: {
+    color: '#0f172a',
+    fontWeight: '600',
+  },
+  primaryButton: {
+    marginTop: 12,
+    backgroundColor: '#93c5fd',
+    paddingVertical: 16,
+    borderRadius: 10,
     alignItems: 'center',
   },
-  listContainer: {
-    paddingBottom: 80,
-  },
-cardWrapper: {
-  marginBottom: -100,
-  paddingHorizontal: 4,
-},
-card: {
-  height: 200,
-  borderRadius: 20,
-  backgroundColor: '#2563eb',
-  padding: 20,
-  justifyContent: 'space-between',
-  shadowColor: '#000',
-  shadowOpacity: 0.1,
-  shadowRadius: 6,
-  elevation: 4,
-  marginHorizontal: 4, // add soft side margin
-  marginVertical: 12,  // similar to inbox card spacing
-},
-
-  cardTitle: {
-    color: 'white',
-    fontSize: 22,
-    fontWeight: 'bold',
-  },
-  cardSubtitle: {
-    color: 'white',
-    fontSize: 14,
-    marginTop: 6,
-  },
-  cardType: {
-    color: 'white',
-    fontSize: 12,
-    opacity: 0.8,
+  primaryButtonText: {
+    color: '#1e3a8a',
+    fontWeight: '600',
+    fontSize: 16,
   },
 });

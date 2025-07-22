@@ -1,127 +1,105 @@
+import React from 'react';
+import { StyleSheet, View, Text, Pressable, Image } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, FlatList, SafeAreaView } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+// import * as Clipboard from 'expo-clipboard';
+
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import QRCode from 'react-native-qrcode-svg';
+import ParallaxScrollView from '@/components/ParallaxScrollView';
 
+export default function ReceiveScreen() {
+  const insets = useSafeAreaInsets();
+  const [copied, setCopied] = useState(false);
 
+  const invoice =
+    'lnbc1pj8sk9tpp5...s9dlw0x07wqg9xeyq96l73umz4n0vf6j3';
 
-interface WalletCard {
-  id: string;
-  type: 'credit' | 'ticket' | 'student';
-  title: string;
-  subtitle?: string;
-  qrCodeData?: string; // Optional QR code data for student cards
-}
-
-const DUMMY_CARDS: WalletCard[] = [
-  { id: '1', type: 'credit', title: 'Visa •••• 4242', subtitle: 'Expires 04/26' },
-  { id: '2', type: 'ticket', title: 'Concert - Imagine Dragons' },  {
-    id: '3',
-    type: 'student',
-    title: 'USI Student ID',
-    subtitle: 'Alan Copa • 2024–2026',
-    qrCodeData: 'https://www.usi.ch/en/authentication/BWFXH', // or a real QR code string
-  }
-];
-
-export default function WalletScreen() {
-  const [cards, setCards] = useState<WalletCard[]>(DUMMY_CARDS);
-
-  const renderCard = ({ item }: { item: WalletCard }) => (
-    <View style={styles.cardWrapper}>
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>{item.title}</Text>
-        {item.subtitle && <Text style={styles.cardSubtitle}>{item.subtitle}</Text>}
-        <Text style={styles.cardType}>Type: {item.type}</Text>
-        {item.type === 'student' && item.qrCodeData && (
-  <View style={{ marginTop: 12 }}>
-    <QRCode value={item.qrCodeData} size={100} backgroundColor="white" />
-  </View>
-)}
-
-      </View>
-    </View>
-  );
+  const handleCopy = async () => {
+    await Clipboard.setStringAsync(invoice);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
 
   return (
-    <SafeAreaView style={styles.safeContainer}>
-      <View style={styles.header}>
-        <ThemedText type="title">Wallet</ThemedText>
-        <View style={styles.icons}>
-          <TouchableOpacity onPress={() => {}}>
-            <Ionicons name="add-circle-outline" size={28} color="#2563eb" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => {}}>
-            <Ionicons name="ellipsis-vertical" size={24} color="#2563eb" style={{ marginLeft: 12 }} />
-          </TouchableOpacity>
-        </View>
-      </View>
-      <FlatList
-  data={cards}
-  keyExtractor={(item) => item.id}
-  renderItem={renderCard}
-  contentContainerStyle={styles.listContainer}
-  ListHeaderComponent={<View style={{ height: 40 }} />}
-  showsVerticalScrollIndicator={false}
-/>
+    <ParallaxScrollView
+      headerBackgroundColor={{ light: '#dcfce7', dark: '#064e3b' }}
+      headerImage={null}
+    >
+      <ThemedView style={[styles.container, { paddingBottom: insets.bottom }]}>
+        <ThemedText type="title">Receive Bitcoin ⚡</ThemedText>
+        <ThemedText style={styles.subtitle}>
+          Let your customer scan or copy your Lightning invoice.
+        </ThemedText>
 
-    </SafeAreaView>
+        {/* QR Placeholder */}
+        <View style={styles.qrWrapper}>
+          <Image
+            source={require('@/assets/images/QR_Code_Example.svg.png')} // use a real QR later
+            style={styles.qrImage}
+            resizeMode="contain"
+          />
+        </View>
+
+        {/* Invoice Text (truncated for display) */}
+        <Text style={styles.invoiceText}>{invoice}</Text>
+
+        <View style={styles.row}>
+          <Pressable style={styles.secondaryButton} onPress={handleCopy}>
+            <Text style={styles.secondaryButtonText}>
+              {copied ? 'Copied!' : 'Copy'}
+            </Text>
+          </Pressable>
+
+          <Pressable style={styles.secondaryButton}>
+            <Text style={styles.secondaryButtonText}>Share 🔗</Text>
+          </Pressable>
+        </View>
+      </ThemedView>
+    </ParallaxScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeContainer: {
-    flex: 1,
-    backgroundColor: '#f8faff',
-    paddingHorizontal: 20,
-    paddingTop: 10,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  icons: {
-    flexDirection: 'row',
+  container: {
+    gap: 20,
+    padding: 20,
     alignItems: 'center',
   },
-  listContainer: {
-    paddingBottom: 80,
+  subtitle: {
+    textAlign: 'center',
+    color: '#64748b',
   },
-cardWrapper: {
-  marginBottom: -100,
-  paddingHorizontal: 4,
-},
-card: {
-  height: 200,
-  borderRadius: 20,
-  backgroundColor: '#2563eb',
-  padding: 20,
-  justifyContent: 'space-between',
-  shadowColor: '#000',
-  shadowOpacity: 0.1,
-  shadowRadius: 6,
-  elevation: 4,
-  marginHorizontal: 4, // add soft side margin
-  marginVertical: 12,  // similar to inbox card spacing
-},
-
-  cardTitle: {
-    color: 'white',
-    fontSize: 22,
-    fontWeight: 'bold',
+  qrWrapper: {
+    backgroundColor: '#f1f5f9',
+    borderRadius: 16,
+    padding: 24,
+    marginTop: 12,
   },
-  cardSubtitle: {
-    color: 'white',
+  qrImage: {
+    width: 180,
+    height: 180,
+  },
+  invoiceText: {
     fontSize: 14,
-    marginTop: 6,
+    color: '#334155',
+    textAlign: 'center',
+    marginTop: 8,
   },
-  cardType: {
-    color: 'white',
-    fontSize: 12,
-    opacity: 0.8,
+  row: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 8,
+  },
+  secondaryButton: {
+    flex: 1,
+    backgroundColor: '#e2e8f0',
+    paddingVertical: 14,
+    alignItems: 'center',
+    borderRadius: 10,
+  },
+  secondaryButtonText: {
+    color: '#0f172a',
+    fontWeight: '600',
   },
 });

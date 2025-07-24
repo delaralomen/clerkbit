@@ -1,11 +1,11 @@
-# ClerkBit - a customizable solution for any business’s needs
+# ClerkBit - A Tailored Digital Assistant For Any Business
 
 It’s your digital employee who takes orders, answers questions, collects Bitcoin, and tracks revenue.
 ## Key Features
 It is your own in every sense of the word:
 - you own your data
 - you choose what AI model fits your needs
-- you host your Bitcoin node
+- you host your model & Bitcoin node
 
 ## Example Use Case
 A café, shop, or service provider can run their own intelligent assistant — no subscriptions, no cloud lock-in, no outages — just smart, private, Bitcoin-powered AI on-premises.
@@ -17,4 +17,4 @@ A café, shop, or service provider can run their own intelligent assistant — n
 
 ## What are we tackling with this solution?
 
-Combining payments with AI can be extremely tricky; therefore, our platform's main focus is to provide a secure and auditable solution that serves as an interface between the Lightning network, the merchant's services, and the customer. It empowers both business owners and customers, as all transactional data is stored locally. Sovereignty, privacy, security. All thanks to the self-hosting feature of the AI model and the Bitcoin node.
+Combining payments with AI can be extremely tricky; here comes ClerkBit into play, a fully-tailored digital assistant for any business. Our platform's main focus is to provide a secure and auditable solution that serves as an interface between the Lightning network, the merchant's services, and the customer. It empowers both business owners and customers, as all transactional data is stored locally. Sovereignty, adaptability, security. All thanks to the self-hosting feature of the AI model and the Bitcoin node.

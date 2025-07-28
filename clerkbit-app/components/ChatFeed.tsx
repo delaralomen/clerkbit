@@ -2,15 +2,16 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   TextInput,
-  Button,
   StyleSheet,
   FlatList,
   KeyboardAvoidingView,
   Platform,
   useColorScheme,
+  ActivityIndicator,
+  Pressable,
+  Text,
 } from 'react-native';
 import { ThemedText } from './ThemedText';
-import { Pressable, Text } from 'react-native';
 
 type Message = {
   id: string;
@@ -21,6 +22,7 @@ type Message = {
 export const ChatFeed = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false); // ✅ track bot response loading
   const flatListRef = useRef<FlatList>(null);
   const colorScheme = useColorScheme();
 
@@ -28,7 +30,7 @@ export const ChatFeed = () => {
     if (flatListRef.current) {
       flatListRef.current.scrollToEnd({ animated: true });
     }
-  }, [messages]);
+  }, [messages, loading]);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -41,6 +43,7 @@ export const ChatFeed = () => {
 
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
+    setLoading(true); // ✅ show loading indicator
 
     try {
       const res = await fetch('http://localhost:5050/chat', {
@@ -68,10 +71,10 @@ export const ChatFeed = () => {
           text: 'Oops! Failed to fetch response.',
         },
       ]);
+    } finally {
+      setLoading(false); // ✅ hide loading indicator
     }
   };
-  console.log('Color scheme is:', colorScheme);
-
 
   return (
     <KeyboardAvoidingView
@@ -107,100 +110,94 @@ export const ChatFeed = () => {
               </View>
             );
           }}
-          contentContainerStyle={styles.chatArea}
-          onContentSizeChange={() =>
-            flatListRef.current?.scrollToOffset({
-              offset: Number.MAX_SAFE_INTEGER,
-              animated: true,
-            })
+          ListFooterComponent={
+            loading ? (
+              <View
+                style={[
+                  styles.bubble,
+                  styles.botBubble,
+                  {
+                    backgroundColor: colorScheme === 'dark' ? '#2a2a2a' : '#e0e0e0',
+                  },
+                ]}
+              >
+                <ActivityIndicator size="small" color="#7C3AED" />
+              </View>
+            ) : null
           }
+          contentContainerStyle={styles.chatArea}
         />
 
         <View
-  style={[
-    styles.inputArea,
-    {
-      backgroundColor: colorScheme === 'dark' ? '#1a1a1a' : '#fff',
-      borderColor: colorScheme === 'dark' ? '#444' : '#ccc',
-    },
-  ]}
->
-  <TextInput
-  value={input}
-  onChangeText={setInput}
-  placeholder="Type a message..."
-  placeholderTextColor={colorScheme === 'dark' ? '#999' : '#888'}
-  onSubmitEditing={sendMessage}
-  returnKeyType="send"
-  blurOnSubmit={false}
-  editable={true}
-  focusable={true} 
-  style={[
-    styles.input,
-    {
-      backgroundColor: colorScheme === 'dark' ? '#2a2a2a' : '#f9f9f9',
-      color: colorScheme === 'dark' ? '#fff' : '#000',
-      borderColor: colorScheme === 'dark' ? '#555' : '#ccc',
-    },
-  ]}
-/>
-
-  <Pressable onPress={sendMessage} style={[
-  {
-    backgroundColor: '#7C3AED',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-  }
-]}>
-  <Text style={{ color: '#fff', fontWeight: 'bold' }}>Send</Text>
-</Pressable>
-</View>
-
+          style={[
+            styles.inputArea,
+            {
+              backgroundColor: colorScheme === 'dark' ? '#1a1a1a' : '#fff',
+              borderColor: colorScheme === 'dark' ? '#444' : '#ccc',
+            },
+          ]}
+        >
+          <TextInput
+            value={input}
+            onChangeText={setInput}
+            placeholder="Type a message..."
+            placeholderTextColor={colorScheme === 'dark' ? '#999' : '#888'}
+            onSubmitEditing={sendMessage}
+            returnKeyType="send"
+            blurOnSubmit={false}
+            editable={!loading} // disable input while waiting
+            focusable={true}
+            style={[
+              styles.input,
+              {
+                backgroundColor: colorScheme === 'dark' ? '#2a2a2a' : '#f9f9f9',
+                color: colorScheme === 'dark' ? '#fff' : '#000',
+                borderColor: colorScheme === 'dark' ? '#555' : '#ccc',
+              },
+            ]}
+          />
+          <Pressable
+            onPress={sendMessage}
+            disabled={loading}
+            style={{
+              backgroundColor: loading ? '#aaa' : '#7C3AED',
+              paddingVertical: 10,
+              paddingHorizontal: 16,
+              borderRadius: 20,
+            }}
+          >
+            <Text style={{ color: '#fff', fontWeight: 'bold' }}>Send</Text>
+          </Pressable>
+        </View>
       </View>
     </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  inner: {
-    flex: 1,
-    justifyContent: 'space-between',
-  },
-  chatArea: {
-    padding: 16,
-    paddingBottom: 32,
-    flexGrow: 1,
-  },
+  container: { flex: 1 },
+  inner: { flex: 1, justifyContent: 'space-between' },
+  chatArea: { padding: 16, paddingBottom: 32, flexGrow: 1 },
   bubble: {
     padding: 12,
     borderRadius: 16,
     marginVertical: 4,
     maxWidth: '80%',
   },
-  userBubble: {
-    alignSelf: 'flex-end',
-  },
-  botBubble: {
-    alignSelf: 'flex-start',
-  },
+  userBubble: { alignSelf: 'flex-end' },
+  botBubble: { alignSelf: 'flex-start' },
   inputArea: {
     flexDirection: 'row',
     padding: 8,
     borderTopWidth: 1,
-    borderColor: '#ccc',
     alignItems: 'center',
-    backgroundColor: '#fff',
   },
   input: {
     flex: 1,
     padding: 10,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#ccc',
     marginRight: 8,
   },
+  
 });

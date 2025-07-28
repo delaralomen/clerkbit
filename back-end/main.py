@@ -1,47 +1,47 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_cors import CORS
-from flask import jsonify
-import random
-
-
+import os
+from dotenv import load_dotenv
+load_dotenv()
+from premai import PremAI
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
+
+# Initialize PremAI client
+API_KEY = os.getenv("PREMAI_API_KEY")
+client = PremAI(api_key=API_KEY)
+MODEL_ID = os.getenv("PREMAI_MODEL_ID")  # Replace with your model ID
 
 @app.route('/')
 def home():
     return "Hello!"
 
-
-
 @app.route('/chat', methods=['POST'])
 def model_response():
     data = request.get_json()
     user_message = data.get('message')
-    print(user_message)
+
+    # Build conversation
     messages = [
-        "Good morning! How can I help you today?",
-        "Welcome! Would you like to start with something to drink?",
-        "Are you ready to order, or do you need a few more minutes?",
-        "Can I get you anything to start?",
-        "Would you like to hear the specials?",
-        "What can I get for you today?",
-        "Would you like that for here or to go?",
-        "How would you like your coffee?",
-        "Do you have any allergies or dietary restrictions I should know about?",
-        "Would you like cream or sugar with that?",
-        "I'll be right back with your order.",
-        "Is everything okay with your meal?",
-        "Can I get you anything else?",
-        "Would you like to see the dessert menu?",
-        "Can I clear these plates for you?",
-        "Would you like the check?",
-        "Thank you! Have a great day!",
-        "Let me know if you need anything else.",
-        "Take your time, no rush.",
-        "I'll be with you in just a moment."
+        {"role": "system", "content": "You are a helpful AI assistant who greets and assists customers through the choice of the items to purchase at the cafeteria / bar. You propose the products depending on the time of the day and weather. You respond depending on the language you are interacted with. You take questions and answer to them accordingly to your knowledge of the store menu like a real waiter. You state allergies and ingredients if needed. You also present prices when the user asks or when it is finalizing the order. You will handles payments too. If you can't fulfill the request you need to state that a human is needed."},
+        {"role": "user", "content": user_message}
     ]
-    return jsonify(message=random.choice(messages))
+
+    try:
+        # Call PremAI model using SDK
+        response = client.chat.completions(
+            model=MODEL_ID,
+            messages=messages
+        )
+
+        # Extract assistant reply
+        assistant_reply = response.choices[0].message.content
+        return jsonify(message=assistant_reply)
+
+    except Exception as e:
+        print("Error:", e)
+        return jsonify(message="Error connecting to the model."), 500
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5050, debug=True)

@@ -42,7 +42,7 @@ export const ChatFeed = () => {
   setInput('');
 
   try {
-    const res = await fetch('http://localhost:5000/chat', {
+    const res = await fetch('http://localhost:5050/chat', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

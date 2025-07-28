@@ -130,9 +130,11 @@ export const ChatFeed = () => {
   onChangeText={setInput}
   placeholder="Type a message..."
   placeholderTextColor={colorScheme === 'dark' ? '#999' : '#888'}
-  onSubmitEditing={sendMessage} // 👈 This line is key
-  returnKeyType="send"          // 👈 (optional) shows "Send" button on mobile keyboard
-  blurOnSubmit={false}          // 👈 (optional) keeps focus after submit
+  onSubmitEditing={sendMessage}
+  returnKeyType="send"
+  blurOnSubmit={false}
+  editable={true}
+  focusable={true} 
   style={[
     styles.input,
     {
@@ -145,7 +147,7 @@ export const ChatFeed = () => {
 
   <Pressable onPress={sendMessage} style={[
   {
-    backgroundColor: '#7C3AED', // Purple
+    backgroundColor: '#7C3AED',
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 20,

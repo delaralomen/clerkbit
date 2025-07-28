@@ -10,6 +10,7 @@ import {
   useColorScheme,
 } from 'react-native';
 import { ThemedText } from './ThemedText';
+import { Pressable, Text } from 'react-native';
 
 type Message = {
   id: string;
@@ -94,7 +95,7 @@ export const ChatFeed = () => {
                   isUser
                     ? {
                         ...styles.userBubble,
-                        backgroundColor: isDark ? '#14532d' : '#DCF8C6',
+                        backgroundColor: isDark ? '#311453ff' : '#dac6f8ff',
                       }
                     : {
                         ...styles.botBubble,
@@ -115,15 +116,45 @@ export const ChatFeed = () => {
           }
         />
 
-        <View style={styles.inputArea}>
-          <TextInput
-            value={input}
-            onChangeText={setInput}
-            placeholder="Type a message..."
-            style={styles.input}
-          />
-          <Button title="Send" onPress={sendMessage} />
-        </View>
+        <View
+  style={[
+    styles.inputArea,
+    {
+      backgroundColor: colorScheme === 'dark' ? '#1a1a1a' : '#fff',
+      borderColor: colorScheme === 'dark' ? '#444' : '#ccc',
+    },
+  ]}
+>
+  <TextInput
+  value={input}
+  onChangeText={setInput}
+  placeholder="Type a message..."
+  placeholderTextColor={colorScheme === 'dark' ? '#999' : '#888'}
+  onSubmitEditing={sendMessage} // 👈 This line is key
+  returnKeyType="send"          // 👈 (optional) shows "Send" button on mobile keyboard
+  blurOnSubmit={false}          // 👈 (optional) keeps focus after submit
+  style={[
+    styles.input,
+    {
+      backgroundColor: colorScheme === 'dark' ? '#2a2a2a' : '#f9f9f9',
+      color: colorScheme === 'dark' ? '#fff' : '#000',
+      borderColor: colorScheme === 'dark' ? '#555' : '#ccc',
+    },
+  ]}
+/>
+
+  <Pressable onPress={sendMessage} style={[
+  {
+    backgroundColor: '#7C3AED', // Purple
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+  }
+]}>
+  <Text style={{ color: '#fff', fontWeight: 'bold' }}>Send</Text>
+</Pressable>
+</View>
+
       </View>
     </KeyboardAvoidingView>
   );

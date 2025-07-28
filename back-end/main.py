@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from flask_cors import CORS
 from flask import jsonify
 import random
@@ -14,8 +14,11 @@ def home():
 
 
 
-@app.route('/chat')
+@app.route('/chat', methods=['POST'])
 def model_response():
+    data = request.get_json()
+    user_message = data.get('message')
+    print(user_message)
     messages = [
         "Good morning! How can I help you today?",
         "Welcome! Would you like to start with something to drink?",

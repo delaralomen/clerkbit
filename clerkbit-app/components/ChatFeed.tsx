@@ -7,6 +7,7 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Platform,
+  useColorScheme,
 } from 'react-native';
 import { ThemedText } from './ThemedText';
 
@@ -19,10 +20,9 @@ type Message = {
 export const ChatFeed = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
-
   const flatListRef = useRef<FlatList>(null);
+  const colorScheme = useColorScheme();
 
-  // 👇 Auto-scroll to bottom on new messages
   useEffect(() => {
     if (flatListRef.current) {
       flatListRef.current.scrollToEnd({ animated: true });
@@ -30,47 +30,46 @@ export const ChatFeed = () => {
   }, [messages]);
 
   const sendMessage = async () => {
-  if (!input.trim()) return;
+    if (!input.trim()) return;
 
-  const userMessage: Message = {
-    id: Date.now().toString(),
-    sender: 'user',
-    text: input,
-  };
-
-  setMessages((prev) => [...prev, userMessage]);
-  setInput('');
-
-  try {
-    const res = await fetch('http://localhost:5050/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ message: input }),
-    });
-
-    const data = await res.json();
-
-    const botMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      sender: 'bot',
-      text: data.message,
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      sender: 'user',
+      text: input,
     };
 
-    setMessages((prev) => [...prev, botMessage]);
-  } catch (err) {
-    console.error(err);
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: (Date.now() + 2).toString(),
+    setMessages((prev) => [...prev, userMessage]);
+    setInput('');
+
+    try {
+      const res = await fetch('http://localhost:5050/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: input }),
+      });
+
+      const data = await res.json();
+
+      const botMessage: Message = {
+        id: (Date.now() + 1).toString(),
         sender: 'bot',
-        text: 'Oops! Failed to fetch response.',
-      },
-    ]);
-  }
-};
+        text: data.message,
+      };
+
+      setMessages((prev) => [...prev, botMessage]);
+    } catch (err) {
+      console.error(err);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 2).toString(),
+          sender: 'bot',
+          text: 'Oops! Failed to fetch response.',
+        },
+      ]);
+    }
+  };
+  console.log('Color scheme is:', colorScheme);
 
 
   return (
@@ -81,26 +80,40 @@ export const ChatFeed = () => {
     >
       <View style={styles.inner}>
         <FlatList
-  ref={flatListRef}
-  data={messages}
-  keyExtractor={(item) => item.id}
-  renderItem={({ item }) => (
-    <View
-      style={[
-        styles.bubble,
-        item.sender === 'user' ? styles.userBubble : styles.botBubble,
-      ]}>
-      <ThemedText>{item.text}</ThemedText>
-    </View>
-  )}
-  contentContainerStyle={styles.chatArea}
-  onContentSizeChange={() =>
-    flatListRef.current?.scrollToOffset({
-        offset: Number.MAX_SAFE_INTEGER,
-        animated: true,
-    })
-  }
-/>
+          ref={flatListRef}
+          data={messages}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => {
+            const isDark = colorScheme === 'dark';
+            const isUser = item.sender === 'user';
+
+            return (
+              <View
+                style={[
+                  styles.bubble,
+                  isUser
+                    ? {
+                        ...styles.userBubble,
+                        backgroundColor: isDark ? '#14532d' : '#DCF8C6',
+                      }
+                    : {
+                        ...styles.botBubble,
+                        backgroundColor: isDark ? '#2a2a2a' : '#e0e0e0',
+                      },
+                ]}
+              >
+                <ThemedText>{item.text}</ThemedText>
+              </View>
+            );
+          }}
+          contentContainerStyle={styles.chatArea}
+          onContentSizeChange={() =>
+            flatListRef.current?.scrollToOffset({
+              offset: Number.MAX_SAFE_INTEGER,
+              animated: true,
+            })
+          }
+        />
 
         <View style={styles.inputArea}>
           <TextInput
@@ -136,11 +149,9 @@ const styles = StyleSheet.create({
     maxWidth: '80%',
   },
   userBubble: {
-    backgroundColor: '#DCF8C6',
     alignSelf: 'flex-end',
   },
   botBubble: {
-    backgroundColor: '#e0e0e0',
     alignSelf: 'flex-start',
   },
   inputArea: {
@@ -158,5 +169,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     marginRight: 8,
-  }
+  },
 });

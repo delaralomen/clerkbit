@@ -8,14 +8,48 @@ import { ThemedView } from '@/components/ThemedView';
 import { ChatFeed } from '@/components/ChatFeed';
 import { QRCodeDisplay } from '@/components/QRCodeDisplay'
 import { createInvoice } from '@/services/LightningService';
+import { BitcoinIcon } from '@bitcoin-design/bitcoin-icons-react/filled'
 
+import PaymentPopup from '@/components/PaymentPopup';
 
 import { useState } from 'react';
-import { View, Button, Text } from 'react-native';
+import { View, Button, Text, Pressable } from 'react-native';
 
 
 export default function HomeScreen() {
   const [invoiceResponse, setInvoiceResponse] = useState<string | null>(null);
+  const [isPaymentPopupVisible, setIsPaymentPopupVisible] = useState(false);
+  const [totalPrice, setTotalPrice] = useState(0);
+
+  const handlePayPressed = async () => {
+    console.log("pay pressed")
+    console.log(totalPrice)
+    // API CALL HERE
+    try {
+      const response = await fetch("http://localhost:5050/order-total", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Order total:", data);
+
+      console.log(data.order_total)
+      console.log(typeof(data.order_total))
+      setTotalPrice(parseFloat(data.order_total))
+      setIsPaymentPopupVisible(true);
+    } catch (error) {
+      console.error("Failed to fetch order total:", error);
+      return null;
+    }
+
+  }
 
   const handlePress = async () => {
     try {
@@ -37,14 +71,22 @@ export default function HomeScreen() {
         <HelloWave />
       </ThemedView>
       <ChatFeed />
-      <Button title="Create Invoice" onPress={handlePress} />
-      {invoiceResponse ? (   // ✅ Only show if paymentString has a value
-        <View style={styles.qrContainer}>
-          <Text style={styles.title}>Scan to Pay</Text>
-          <QRCodeDisplay value={invoiceResponse} size={500} />
-        </View>
-      ) : null}
+      <Pressable
+        style={[styles.payButton, { backgroundColor: '#7C3AED' }]}
+        onPress={handlePayPressed}
+      >
+        <BitcoinIcon style={{ height: 25, width: 25, color: '#FFA500', marginRight: 0 }} />
+        <Text style={styles.payButtonText}>Pay</Text>
+      </Pressable>
+
+      {/* Payment Popup */}
+      <PaymentPopup
+        visible={isPaymentPopupVisible}
+        onClose={() => setIsPaymentPopupVisible(false)}
+        total={totalPrice}
+      />
     </SafeAreaView>
+
   );
 }
 
@@ -81,5 +123,20 @@ const styles = StyleSheet.create({
   qrContainer: {
     marginTop: 20,
     alignItems: "center",
+  },
+  payButton: {
+    flexDirection: 'row',      // inline layout
+    alignItems: 'center',      // vertical centering
+    justifyContent: 'center',  // horizontal centering
+    gap: 6,
+    paddingVertical: 8,
+    paddingLeft: 2,
+    paddingRight: 7,
+    borderRadius: 8,
+  },
+  payButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 16,
   },
 });

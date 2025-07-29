@@ -14,7 +14,7 @@ anthropic = Anthropic(api_key=ANTHROPIC_API_KEY)
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 conversation_memory = {}
-
+order_total = None
 
 # ===== Tool Definition =====
 tool_definitions = [
@@ -139,12 +139,35 @@ def handle_get_menu():
     print("⬅️  Menu received.")
     return data
 
+# def handle_create_order(input_data):
+#     print("➡️  Calling MCP /order")
+#     resp = requests.post("http://localhost:6060/order", json=input_data)
+#     resp.raise_for_status()
+#     data = resp.json()
+#     print("⬅️  Order confirmed.")
+#     return data
+
+
 def handle_create_order(input_data):
+    global order_total  # to assign to the global variable
+
     print("➡️  Calling MCP /order")
     resp = requests.post("http://localhost:6060/order", json=input_data)
     resp.raise_for_status()
     data = resp.json()
     print("⬅️  Order confirmed.")
+
+    # Fetch total from MCP and assign globally
+    try:
+        total_resp = requests.get("http://localhost:6060/total")
+        total_resp.raise_for_status()
+        total_data = total_resp.json()
+        order_total = total_data.get("total_chf")
+        print(f"💰 Global order_total updated: {order_total}")
+    except Exception as e:
+        print(f"⚠️ Failed to update order_total: {e}")
+        order_total = None
+
     return data
 
 

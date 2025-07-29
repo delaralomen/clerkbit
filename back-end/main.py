@@ -1,66 +1,188 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from anthropic import Anthropic, HUMAN_PROMPT, AI_PROMPT
+from anthropic import Anthropic
 from dotenv import load_dotenv
 import os
+import json
+import requests
 
-# ========== ENV / CONFIG ==========
+# ===== Setup =====
 load_dotenv()
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
-
-# ========== INIT ==========
-app = Flask(__name__)
-CORS(app, supports_credentials=True)
 anthropic = Anthropic(api_key=ANTHROPIC_API_KEY)
 
-# ========== MEMORY ==========
-conversation_memory = {}  # Dict[conversation_id] = list of messages
+app = Flask(__name__)
+CORS(app, supports_credentials=True)
+conversation_memory = {}
 
-# ========== ROUTES ==========
-@app.route('/')
-def home():
-    return "Hello from Claude!"
 
-@app.route('/chat', methods=['POST'])
+# ===== Tool Definition =====
+tool_definitions = [
+    {
+        "name": "get_menu",
+        "description": "Get the current cafe menu with categories and prices in CHF",
+        "input_schema": {
+            "type": "object",
+            "properties": {},
+            "required": []
+        }
+    },
+    {
+        "name": "create_order",
+        "description": "Submit the customer's final order for processing.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "order": {
+                    "type": "string",
+                    "description": "A text summary of the final order"
+                }
+            },
+            "required": ["order"]
+        }
+    }
+]
+
+
+# ====== Helper: Initialize conversation ======
+def initialize_conversation(conv_id):
+    # system_prompt = (
+    #     "You are a polite restaurant assistent. You will only answer questions about the restaurants menu and will not make anything up. If you dont have information about an item requested by the user you will tell them you cannot answer the question nicely. You will answer questions only based on information provided in the stores menu. You will provide all monetary prices and write 'CHF' afterwards. If you dont have specific information to a question of the customer you will say that you don't have this information. You will reason if the request is a call to action or information request. When displaying a price make sure it is in CHF."
+    # )
+    system_prompt = ("You are a polite and helpful restaurant assistant. You only answer questions about the restaurant's menu. You are not allowed to guess or make up any information. For any question involving items, categories, ingredients, allergens, availability, or prices, you must use the `get_menu` tool to fetch accurate information from the official menu system. You are not allowed to answer menu-related questions from memory or training — always use the tool. If you do not have access to the `get_menu` tool, or the information is missing, reply kindly: 'I'm sorry, I currently don't have access to the correct menu information.' You must provide all prices and write 'CHF' after the amount. The amount should be shown with 2 decimal places. If the customer makes a request or order, you should identify it as a call to action and assist accordingly. You must never invent menu items or prices. You only answer based on the data returned from the `get_menu` tool.")
+    history = [
+        {"role": "user", "content": system_prompt},
+        {"role": "assistant", "content": "Understood!"}
+    ]
+    conversation_memory[conv_id] = history
+    return history
+
+# ====== Helper: Send to Claude ======
+def call_claude(history, model="claude-3-5-sonnet-20241022"):
+    try:
+        response = anthropic.messages.create(
+            model=model,
+            max_tokens=400,
+            temperature=0.7,
+            messages=history,
+            tools=tool_definitions
+        )
+        return response
+    except Exception as e:
+        print("Error calling Claude:", e)
+        return None
+
+
+def handle_get_menu():
+    print("➡️  Calling MCP /menu")
+    resp = requests.get("http://localhost:6060/menu")
+    resp.raise_for_status()
+    data = resp.json()
+    print("⬅️  Menu received.")
+    return data
+
+def handle_create_order(order_text):
+    print("➡️  Calling MCP /order")
+    resp = requests.post("http://localhost:6060/order", json={"order": order_text})
+    resp.raise_for_status()
+    data = resp.json()
+    print("⬅️  Order confirmed.")
+    return data
+
+
+# ====== Helper: Handle Tool Use ======
+def handle_tool_use(block, history):
+    tool_use_id = block.id
+    tool_name = block.name
+    tool_input = block.input
+
+    print(f"🛠 Tool requested: {tool_name} with ID: {tool_use_id}")
+
+    # Save the tool_use block into the assistant message
+    history.append({
+        "role": "assistant",
+        "content": [
+            {
+                "type": "tool_use",
+                "id": tool_use_id,
+                "name": tool_name,
+                "input": tool_input
+            }
+        ]
+    })
+
+    try:
+        # Dispatch by tool name
+        if tool_name == "get_menu":
+            result = handle_get_menu()
+
+        elif tool_name == "create_order":
+            result = handle_create_order(tool_input.get("order", ""))
+
+        else:
+            raise ValueError(f"No handler for tool: {tool_name}")
+
+        # Append user message with tool result
+        history.append({
+            "role": "user",
+            "content": [
+                {
+                    "type": "tool_result",
+                    "tool_use_id": tool_use_id,
+                    "content": json.dumps(result)
+                }
+            ]
+        })
+
+        # Follow-up Claude call
+        followup = call_claude(history)
+        if followup:
+            for block in followup.content:
+                if block.type == "text":
+                    return block.text.strip()
+
+    except Exception as e:
+        print(f"❌ Tool handling failed: {e}")
+        return "There was an error executing the tool."
+
+    return "Tool executed, but no text response received."
+
+
+# ====== Main Endpoint ======
 @app.route('/chat', methods=['POST'])
 def model_response():
     data = request.get_json()
     user_message = data.get('message')
-    conv_id = data.get('conversation_id', 'default')  # Use 'default' if no ID provided
+    conv_id = data.get('conversation_id', 'default')
+    model = data.get('model', 'claude-3-5-sonnet-20241022')
 
-    # Retrieve or initialize conversation
-    history = conversation_memory.get(conv_id, [])
-
+    history = conversation_memory.get(conv_id)
     if not history:
-        system_prompt = (
-            "You are a helpful AI assistant who greets and assists customers through the choice of the items to purchase at the cafeteria / bar. You propose the products depending on the time of the day and weather. You respond depending on the language you are interacted with. You take questions and answer to them accordingly to your knowledge of the store menu like a real waiter. You state allergies and ingredients if needed. You also present prices when the user asks or when it is finalizing the order. You will handle payments too. If you can't fulfill the request you need to state that a human is needed. When displaying a price make sure it is in CHF."
-        )
-        history.append({"role": "user", "content": system_prompt})
-        history.append({"role": "assistant", "content": "Understood!"})
+        history = initialize_conversation(conv_id)
 
-    # Add user message
     history.append({"role": "user", "content": user_message})
 
-    try:
-        response = anthropic.messages.create(
-         model = "claude-3-5-sonnet-20241022",
-            max_tokens=400,
-            temperature=0.7,
-            messages=history
-        )
+    response = call_claude(history, model=model)
+    if not response:
+        return jsonify({"message": "Error calling Claude API."}), 500
 
-        assistant_reply = response.content[0].text.strip()
+    # Check for tool use
+    for block in response.content:
+        if block.type == "tool_use":
+            assistant_reply = handle_tool_use(block, history)
+            conversation_memory[conv_id] = history
+            return jsonify({"message": assistant_reply})
 
-        # Add to memory
-        history.append({"role": "assistant", "content": assistant_reply})
-        conversation_memory[conv_id] = history
+    # Otherwise return normal reply
+    for block in response.content:
+        if block.type == "text":
+            assistant_reply = block.text.strip()
+            history.append({"role": "assistant", "content": assistant_reply})
+            conversation_memory[conv_id] = history
+            return jsonify({"message": assistant_reply})
 
-        return jsonify(message=assistant_reply)
+    return jsonify({"message": "No valid reply received."}), 500
 
-    except Exception as e:
-        print("Error:", e)
-        return jsonify(message="Error calling Claude API."), 500
-
-
+# ====== Run Server ======
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5050, debug=True)

@@ -11,6 +11,8 @@ CORS(app, supports_credentials=True)
 CLAUDE_BACKEND_URL = "http://localhost:5050/chat"
 
 
+basket = []
+
 cafe_menu_chf = {
     "Hot Beverages": {
         "Espresso": 3.50,
@@ -52,6 +54,21 @@ cafe_menu_chf = {
 def get_menu():
     return jsonify(cafe_menu_chf)
 
+
+
+@app.route('/order', methods=['POST'])
+def create_order():
+    data = request.get_json()
+    order_summary = data.get('order')
+
+    if not order_summary:
+        return jsonify({"error": "Missing 'order' in request"}), 400
+
+    # Save the order to the basket
+    basket.append(order_summary)
+
+    print(f"🧺 Order added to basket: {basket}")
+    return jsonify({"status": "success", "message": "Order has been added to the basket."})
 
 
 

@@ -1,31 +1,44 @@
-import { Stack, Tabs } from 'expo-router';
+import { Tabs } from 'expo-router';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { Colors } from '@/constants/Colors';
 import React from 'react';
 import { Platform } from 'react-native';
-
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <Stack
+    <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
-          },
+          ios: { position: 'absolute' },
           default: {},
         }),
-      }}>
-    </Stack>
+      }}
+    >
+      <Tabs.Screen
+        name="assistant"
+        options={{
+          title: 'Assistant',
+          tabBarIcon: ({ color, size }) => (
+            // If you have a custom Icon component:
+            // <IconSymbol name="chatbubble" color={color} size={size} />
+            <></>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="menu"
+        options={{
+          title: 'Menu',
+          tabBarIcon: ({ color, size }) => (
+            // Replace with your own icon system
+            <></>
+          ),
+        }}
+      />
+    </Tabs>
   );
 }

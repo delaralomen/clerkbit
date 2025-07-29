@@ -7,6 +7,8 @@ export const createInvoice = async (
     if (!API_TOKEN || !ALBY_ENDPOINT) {
         throw new Error("Missing API_TOKEN or ALBY_ENDPOINT in .env file");
     }
+    console.log(123)
+    console.log(amount)
 
     const requestBody = { amount, description };
 

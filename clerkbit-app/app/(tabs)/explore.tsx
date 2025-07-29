@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import PaymentPopup from '@/components/PaymentPopup';
+import { BitcoinIcon } from '@bitcoin-design/bitcoin-icons-react/filled'
 
 const cafe_menu_chf = {
   "Hot Beverages": {
@@ -138,11 +139,11 @@ export default function TabTwoScreen() {
           </Text>
           <Pressable
             style={[styles.payButton, { backgroundColor: '#7C3AED' }]}
-            onPress={handlePayPressed }
+            onPress={handlePayPressed}
           >
+            <BitcoinIcon style={{ height: 25, width: 25, color: '#FFA500', marginRight: 0 }} />
             <Text style={styles.payButtonText}>Pay</Text>
           </Pressable>
-
         </View>
       </View>
 
@@ -276,8 +277,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   payButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
     paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingLeft:2,
+    paddingRight:7,
     borderRadius: 8,
   },
   payButtonText: {

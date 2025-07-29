@@ -65,7 +65,8 @@ def create_order():
         return jsonify({"error": "Missing 'order' in request"}), 400
 
     # Save the order to the basket
-    basket.append(order_summary)
+    # basket.append(order_summary)
+    basket = [order_summary]
 
     print(f"🧺 Order added to basket: {basket}")
     return jsonify({"status": "success", "message": "Order has been added to the basket."})

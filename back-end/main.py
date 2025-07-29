@@ -229,7 +229,7 @@ def handle_tool_use(block, history):
     return "Tool executed, but no text response received."
 
 
-# ====== Main Endpoint ======
+# ====== Front-End Endpoints ======
 @app.route('/chat', methods=['POST'])
 def model_response():
     data = request.get_json()
@@ -263,6 +263,18 @@ def model_response():
             return jsonify({"message": assistant_reply})
 
     return jsonify({"message": "No valid reply received."}), 500
+
+
+
+@app.route('/order-total', methods=['GET'])
+def get_order_total():
+    if order_total is not None:
+        return jsonify({"order_total": order_total})
+    else:
+        return jsonify({"message": "No order total available yet."}), 404
+
+
+
 
 # ====== Run Server ======
 if __name__ == '__main__':

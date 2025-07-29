@@ -58,6 +58,7 @@ export const ChatFeed = () => {
       };
 
       setMessages((prev) => [...prev, botMessage]);
+      console.log(data)
     } catch (err) {
       console.error(err);
       setMessages((prev) => [
@@ -70,7 +71,6 @@ export const ChatFeed = () => {
       ]);
     }
   };
-  console.log('Color scheme is:', colorScheme);
 
 
   return (

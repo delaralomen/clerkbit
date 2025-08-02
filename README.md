@@ -3,7 +3,7 @@
 
 # ClerkBit – A Tailored Digital Assistant For Any Business
 
-Built in 24 hours for **Plan ₿ Network**’s inaugural Hackathon in Lugano, this project earned us 🥉 3rd place out of 12 teams.
+Built in 24 hours for [**Plan ₿ Network**](https://planb.network/en)’s inaugural Hackathon in Lugano, this project earned us 🥉 3rd place out of 12 teams.
 
 ## What is ClerkBit?
 It’s your digital employee who takes orders, answers questions, collects Bitcoin, and tracks order revenue.
@@ -39,7 +39,24 @@ python mcp-server.py
 ```
 
 ## Tech Stack
-- Front-end: Expo (React Native)
-- Back-end: Flask (Python)
-- MCP Server: Model Context Protocol (Python)
-- Lightning NWC Integration: AlbyHub + Alby SDK (JavaScript)
+#### Front-end
+Expo 
+<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/expo/expo-original.svg" alt="Expo" width="20" height="20"/>(React Native)
+<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg" alt="React Native" width="20" height="20"/>
+
+#### Back-end
+Flask
+<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/flask/flask-original.svg" alt="Flask" width="20" height="20"/> (Python)
+<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="Python" width="20" height="20"/>
+
+#### MCP Server
+
+Model Context Protocol (Python)
+<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="Python" width="20" height="20"/>
+
+#### Lightning NWC Integration
+AlbyHub
+<img src="https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/alby.svg" alt="Alby" width="20" height="20"/> + Alby SDK
+<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" alt="JavaScript" width="20" height="20"/>
+
+

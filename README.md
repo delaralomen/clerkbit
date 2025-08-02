@@ -1,10 +1,16 @@
-# ClerkBit - A Tailored Digital Assistant For Any Business
 
+**🏆 3rd Place Winner @ Bitcoin + AI Hackathon 2025**
+
+# ClerkBit – A Tailored Digital Assistant For Any Business
+
+Built in 24 hours for **Plan ₿ Network**’s inaugural Hackathon in Lugano, this project earned us 🥉 3rd place out of 12 teams.
+
+## What is ClerkBit?
 It’s your digital employee who takes orders, answers questions, collects Bitcoin, and tracks order revenue.
 
 ## Key Features
 It is your own in every sense of the word:
-- you own your data
+- you feed it your own your data
 - you choose what AI model fits your needs
 - you get to choose how you host your Bitcoin node
 
@@ -16,5 +22,24 @@ A café, shop, or service provider can run their own intelligent assistant in th
 4. Locals or tourists interact with the app via QR code or web app in any language they prefer, paying in Bitcoin.
 
 ## What are we tackling with this solution?
-
 Combining payments with AI can be extremely tricky; here comes ClerkBit into play, a fully-tailored digital assistant for any business. Our platform's main focus is to provide a secure and auditable solution that serves as an interface between the Lightning network, the merchant's services, and the customer. It empowers both business owners and customers, as it makes business processes quicker and costs lower. For this hackathon, we tailored our MVP to showcase a digital assistant in a café setting—reflecting Lugano’s café culture and its strong embrace of Bitcoin.
+
+## To Run Our Project
+- Front-end: 
+```
+npm i && npx expo start
+```
+- Back-end:
+```
+python main.py
+```
+- MCP Server:
+```
+python mcp-server.py
+```
+
+## Tech Stack
+- Front-end: Expo (React Native)
+- Back-end: Flask (Python)
+- MCP Server: Model Context Protocol (Python)
+- Lightning NWC Integration: AlbyHub + Alby SDK (JavaScript)

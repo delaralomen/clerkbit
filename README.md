@@ -26,14 +26,20 @@ Combining payments with AI can be extremely tricky; here comes ClerkBit into pla
 
 ## To Run Our Project
 - Front-end: 
+  
+  in `./clerkbit-app` run
 ```
 npm i && npx expo start
 ```
 - Back-end:
+  
+  in `./back-end` run
 ```
 python main.py
 ```
 - MCP Server:
+  
+  in `./back-end` run
 ```
 python mcp-server.py
 ```

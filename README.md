@@ -5,7 +5,7 @@
 
 Built in 24 hours for [**Plan ₿ Network**](https://planb.network/en)’s inaugural Hackathon in Lugano, this project earned us 🥉 3rd place out of 12 teams.
 
-You can read more about our experience [here](https://www.tio.ch/newsblog/lugano-s-plan-/1857066/lugano-network-bitcoin-plan-soluzioni-hackathon-lido).
+You can read more about our experience <a target="_blank" href="https://www.tio.ch/newsblog/lugano-s-plan-/1857066/lugano-network-bitcoin-plan-soluzioni-hackathon-lido">here</a>.
 
 ## What is ClerkBit?
 It’s your digital employee who takes orders, answers questions, collects Bitcoin, and tracks order revenue.

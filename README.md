@@ -49,22 +49,28 @@ python mcp-server.py
 ## Tech Stack
 #### Front-end
 Expo 
-<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/expo/expo-original.svg" alt="Expo" width="20" height="20"/>(React Native)
-<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg" alt="React Native" width="20" height="20"/>
+<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/expo/expo-original.svg" style="vertical-align: middle;" alt="Expo" width="20" height="20"/> (React Native)
+<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg" style="vertical-align: middle;" alt="React Native" width="20" height="20"/>
 
 #### Back-end
 Flask
-<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/flask/flask-original.svg" alt="Flask" width="20" height="20"/> (Python)
-<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="Python" width="20" height="20"/>
+<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/flask/flask-original.svg" style="vertical-align: middle;" alt="Flask" width="20" height="20"/> (Python)
+<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" style="vertical-align: middle;" alt="Python" width="20" height="20"/>
+
+#### LLM
+
+Anthropic API's *Sonnet 3.5*
+<img src="https://cdn.simpleicons.org/anthropic" alt="Anthropic" style="vertical-align: middle;" width="20" height="20"/>
 
 #### MCP Server
 
-Model Context Protocol (Python)
-<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="Python" width="20" height="20"/>
+Model Context Protocol
+<img alt="MCP Logo" src="https://mintlify.s3.us-west-1.amazonaws.com/mcp/mcp.png" alt="MCP"  style="vertical-align: middle;" width="20" height="20"> (Python)
+<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" style="vertical-align: middle;" alt="Python" width="20" height="20"/>
 
 #### Lightning NWC Integration
 AlbyHub
-<img src="https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/alby.svg" alt="Alby" width="20" height="20"/> + Alby SDK
-<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" alt="JavaScript" width="20" height="20"/>
+<img src="https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/alby.svg" style="vertical-align: middle;" alt="Alby" width="20" height="20"/> + Alby SDK
+<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" style="vertical-align: middle;" alt="JavaScript" width="20" height="20"/>
 
 

@@ -65,7 +65,7 @@ Anthropic API's *Sonnet 3.5*
 #### MCP Server
 
 Model Context Protocol
-<img alt="MCP Logo" src="https://mintlify.s3.us-west-1.amazonaws.com/mcp/mcp.png" alt="MCP"  style="vertical-align: middle;" width="20" height="20"> (Python)
+<img src="https://mintlify.s3.us-west-1.amazonaws.com/mcp/mcp.png" alt="MCP" style="vertical-align: middle;" width="20" height="20"> (Python)
 <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" style="vertical-align: middle;" alt="Python" width="20" height="20"/>
 
 #### Lightning NWC Integration

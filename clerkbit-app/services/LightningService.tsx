@@ -1,9 +1,12 @@
-import { API_TOKEN, ALBY_ENDPOINT } from "@env";
-
 export const createInvoice = async (
     amount: number,
     description: string
 ) => {
+    //TODO: this is a temporary situation, the keys must be stored in an ENV file on the backend, and QR codes generated on server side, to then be received and displayed by client device
+    const API_TOKEN = "TMP key replace with existing one, dont push"
+    const ALBY_ENDPOINT = "TMP key replace with existing one, dont push"
+    console.log(123)
+    console.log(API_TOKEN)
     if (!API_TOKEN || !ALBY_ENDPOINT) {
         throw new Error("Missing API_TOKEN or ALBY_ENDPOINT in .env file");
     }
